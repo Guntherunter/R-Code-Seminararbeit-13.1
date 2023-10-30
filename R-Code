@@ -1,0 +1,101 @@
+#Tim Apostel Seminararbeit Chemie im Haushalt 13.1
+library(tidyverse)
+library(readxl)
+library(ggthemes)
+#################################
+#cleaning data
+
+#aluminum salts grouped up
+ingredients_raw <- read_excel("C:\\Users\\ta444\\Desktop\\Studium\\R\\Documents\\R-Dateien\\Semi_13.1\\Deo_Data-Aluminiumsalze-Kokus.xlsx")
+
+#true raw
+ingredients_raw <- read_excel("C:\\Users\\ta444\\Desktop\\Studium\\R\\Documents\\R-Dateien\\Semi_13.1\\Deo_Data.xlsx")
+
+ingredients_longer <- ingredients_raw |> 
+  pivot_longer(4:31,
+               values_to = "ingredient",
+               names_to = "redundant") |> 
+  select(-redundant) |> 
+  drop_na(ingredient)
+  
+ingredients_longer$PRICE <- gsub("\\$", "", ingredients_longer$PRICE) #\\ before $ necessary, due to $ being a special character in regular expression
+ingredients_longer$PRICE <- as.numeric(ingredients_longer$PRICE)
+ingredients_longer$WEIGHT <- as.numeric(ingredients_longer$WEIGHT)
+  
+ingredients_longer <- ingredients_longer |> 
+  mutate(PRICE_per_100g = PRICE / WEIGHT * 100)
+
+############################
+#values
+unique(ingredients_longer$ingredient)
+median(ingredients_longer$PRICE_per_100g)
+mean(ingredients_longer$PRICE_per_100g)
+
+maximum_value <- max(ingredients_longer$PRICE_per_100g)
+minimum_value <- min(ingredients_longer$PRICE_per_100g)
+
+#Bartlett’s Test for n >= 10
+ingredients_bartlett <- ingredients_longer |> 
+  group_by(ingredient) |> 
+  filter(n() >= 10) |> 
+  select(-WEIGHT, -PRICE, -NAME)
+
+bartlett.test(PRICE_per_100g ~ ingredient, data = ingredients_bartlett) #p-value = 0.01278
+
+#Welch’s ANOVA for n >= 10
+oneway.test(PRICE_per_100g ~ ingredient, data = ingredients_bartlett, var.equal = FALSE) #p-value = 2.948e-10
+
+#plots
+
+#box plot
+ingredients_longer |> 
+  group_by(ingredient) |> 
+  filter(n() >= 10) |> # Only ingredients that appear more than n times are included
+  ggplot(aes(
+    x = reorder(ingredient, PRICE_per_100g, FUN = median),
+    y = PRICE_per_100g
+  )) +
+  geom_boxplot() +
+  labs(
+    x = "Inhaltsstoffe",
+    y = "Preis pro 100g",
+    title = "Verteilung der Preise von Deodorants mit unterschiedlichen Inhaltstoffen",
+    subtitle = "Nur Inhaltsstoffe, die mindestens 10-mal vorkommen, sind dargestellt") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7)) +
+  scale_y_continuous(labels = scales::dollar_format())
+
+#Bar Plot
+ingredients_longer |>
+  group_by(ingredient) |>
+  filter(n() >= 20 | ingredient == "cyclopentasiloxane" | ingredient == "sodium hydroxide" | ingredient == "aluminum salt") |>
+  ggplot(aes(
+    x = fct_infreq(ingredient)
+  ))+
+  geom_bar(fill = "lightblue3")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10))+
+  labs(
+    title = "Anzahl der Inhaltsstoffe in Deodorants",
+    y = "Anzahl",
+    x = "Inhaltsstoff"
+  )
+
+#Density plou
+ingredients_longer |>
+  group_by(ingredient) |>
+  filter(n() >= 20 | ingredient == "cyclopentasiloxane" | ingredient == "sodium hydroxide" | ingredient == "aluminum salt") |>
+  rename(Inhaltsstoff = ingredient) |> 
+  ggplot(aes(
+    x = PRICE_per_100g,
+    color = Inhaltsstoff
+  ))+
+  geom_density(alpha = 0.3)+
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 10))+
+  scale_x_continuous(labels = scales::dollar_format())+
+  labs(
+    title = "Preise und Inhaltsstoffe",
+    y = "Anzahl",
+    x = "Preis"
+  )+
+  scale_color_colorblind()

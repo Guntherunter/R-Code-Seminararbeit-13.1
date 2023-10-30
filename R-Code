@@ -6,10 +6,10 @@ library(ggthemes)
 #cleaning data
 
 #aluminum salts grouped up
-ingredients_raw <- read_excel("C:\\Users\\ta444\\Desktop\\Studium\\R\\Documents\\R-Dateien\\Semi_13.1\\Deo_Data-Aluminiumsalze-Kokus.xlsx")
+ingredients_raw <- read_excel("C:\\Users\\ta\\Desktop\\Schule\\R\\Documents\\R-Dateien\\Semi_13.1\\Deo_Data-Aluminiumsalze-Kokus.xlsx")
 
 #true raw
-ingredients_raw <- read_excel("C:\\Users\\ta444\\Desktop\\Studium\\R\\Documents\\R-Dateien\\Semi_13.1\\Deo_Data.xlsx")
+ingredients_raw <- read_excel("C:\\Users\\ta\\Desktop\\Schule\\R\\Documents\\R-Dateien\\Semi_13.1\\Deo_Data.xlsx")
 
 ingredients_longer <- ingredients_raw |> 
   pivot_longer(4:31,

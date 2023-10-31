@@ -92,7 +92,7 @@ ingredients_longer |>
   scale_x_continuous(labels = scales::dollar_format())+
   labs(
     title = "Preise und Inhaltsstoffe",
-    y = "Anzahl",
+    y = "Dichte",
     x = "Preis"
   )+
   scale_color_colorblind()

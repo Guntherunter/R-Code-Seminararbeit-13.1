@@ -21,12 +21,18 @@ ingredients_longer$WEIGHT <- as.numeric(ingredients_longer$WEIGHT)
   
 ingredients_longer <- ingredients_longer |> 
   mutate(PRICE_per_100g = PRICE / WEIGHT * 100)
+#############################
+ingredients_raw$PRICE <- gsub("\\$", "", ingredients_raw$PRICE) #\\ before $ necessary, due to $ being a special character in regular expression
+ingredients_raw$PRICE <- as.numeric(ingredients_raw$PRICE)
+ingredients_raw$WEIGHT <- as.numeric(ingredients_raw$WEIGHT)
 
+ingredients_raw <- ingredients_raw |> 
+  mutate(PRICE_per_100g = PRICE / WEIGHT * 100)
 ############################
 #values
 unique(ingredients_longer$ingredient)
-median(ingredients_longer$PRICE_per_100g)
-mean(ingredients_longer$PRICE_per_100g)
+median(ingredients_raw$PRICE_per_100g)
+mean(ingredients_raw$PRICE_per_100g)
 
 maximum_value <- max(ingredients_longer$PRICE_per_100g)
 minimum_value <- min(ingredients_longer$PRICE_per_100g)

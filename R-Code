@@ -62,7 +62,7 @@ ingredients_longer |>
   labs(
     x = "Inhaltsstoffe",
     y = "Preis pro 100g",
-    title = "Verteilung der Preise von Deodorants mit unterschiedlichen Inhaltstoffen",
+    title = "Verteilung der Preise von Deodorants mit unterschiedlichen Inhaltsstoffen",
     subtitle = "Nur Inhaltsstoffe, die mindestens 10-mal vorkommen, sind dargestellt") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7)) +
   scale_y_continuous(labels = scales::dollar_format())

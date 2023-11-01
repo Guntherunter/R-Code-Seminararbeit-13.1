@@ -83,7 +83,7 @@ ingredients_longer |>
     x = "Inhaltsstoff"
   )
 
-#Density plou
+#Density plot
 ingredients_longer |>
   group_by(ingredient) |>
   filter(n() >= 20 | ingredient == "cyclopentasiloxane" | ingredient == "sodium hydroxide" | ingredient == "aluminum salt") |>
